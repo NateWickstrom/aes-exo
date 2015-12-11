@@ -12,7 +12,6 @@ import com.google.android.exoplayer.ExoPlayerLibraryInfo;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.extractor.ExtractorSampleSource;
-import com.google.android.exoplayer.extractor.mp3.Mp3Extractor;
 import com.google.android.exoplayer.upstream.Allocator;
 import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
@@ -24,9 +23,15 @@ public class MainActivity extends AppCompatActivity {
     private static final byte[] AES_KEY = hexStringToByteArray("098F6BCD4621D373CADE4E832627B4F6");
     private static final byte[] AES_IV = hexStringToByteArray("0A9172716AE6428409885B8B829CCB05");
 
+    private static final Uri ENCRYPTED_MUSIC_URI = Uri.parse("asset:///encrypted_music_sample.enc");
+    private static final Uri MUSIC_URI = Uri.parse("asset:///music_sample.m4a");
+
     private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
+    private static final int BUFFER_SEGMENT_COUNT = 256;
 
     private ExoPlayer player;
+
+    private static final boolean PLAY_ENCRYPTED = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +50,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupPlayer(){
-        Uri uri = Uri.parse("asset:///music_sample_encrypted.enc");
-        Allocator allocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
-
-        DataSource dataSource = new DefaultUriDataSource(this, getUserAgent());
-        Aes128DataSource aes128DataSource = new Aes128DataSource(dataSource, AES_KEY, AES_IV);
-
-        SampleSource sampleSource = new ExtractorSampleSource(uri, aes128DataSource, allocator, BUFFER_SEGMENT_SIZE, new Mp3Extractor());
+        SampleSource sampleSource = PLAY_ENCRYPTED ? getEncryptedSampleSource() : getSampleSource();
         MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource);
 
         player.prepare(audioRenderer);
         player.setPlayWhenReady(true);
+    }
+
+    private SampleSource getSampleSource(){
+        Allocator allocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
+        DataSource dataSource = new DefaultUriDataSource(this, getUserAgent());
+        return new ExtractorSampleSource(MUSIC_URI, dataSource, allocator, BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE);
+    }
+
+    private SampleSource getEncryptedSampleSource(){
+        Allocator allocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
+        DataSource dataSource = new DefaultUriDataSource(this, getUserAgent());
+        Aes128DataSource aes128DataSource = new Aes128DataSource(dataSource, AES_KEY, AES_IV);
+        return new ExtractorSampleSource(ENCRYPTED_MUSIC_URI, aes128DataSource, allocator, BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE);
     }
 
     public String getUserAgent() {
