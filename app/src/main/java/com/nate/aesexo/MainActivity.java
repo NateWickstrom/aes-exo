@@ -11,6 +11,7 @@ import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.ExoPlayerLibraryInfo;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
+import com.google.android.exoplayer.TrackRenderer;
 import com.google.android.exoplayer.extractor.ExtractorSampleSource;
 import com.google.android.exoplayer.upstream.Allocator;
 import com.google.android.exoplayer.upstream.DataSource;
@@ -20,17 +21,19 @@ import com.google.android.exoplayer.upstream.DefaultUriDataSource;
 
 public class MainActivity extends AppCompatActivity {
 
+    //encryption command (on mac): openssl enc -aes-128-cbc -nosalt -p -in music.aac -out music.enc
     private static final byte[] AES_KEY = hexStringToByteArray("098F6BCD4621D373CADE4E832627B4F6");
     private static final byte[] AES_IV = hexStringToByteArray("0A9172716AE6428409885B8B829CCB05");
 
-    private static final Uri ENCRYPTED_MUSIC_URI = Uri.parse("asset:///encrypted_music_sample.enc");
-    private static final Uri MUSIC_URI = Uri.parse("asset:///music_sample.m4a");
+    private static final Uri ENCRYPTED_MUSIC_URI = Uri.parse("asset:///music.enc");
+    private static final Uri MUSIC_URI = Uri.parse("asset:///music.aac");
 
     private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
     private static final int BUFFER_SEGMENT_COUNT = 256;
 
     private ExoPlayer player;
 
+    // toggle setting used for debugging
     private static final boolean PLAY_ENCRYPTED = true;
 
     @Override
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupPlayer(){
         SampleSource sampleSource = PLAY_ENCRYPTED ? getEncryptedSampleSource() : getSampleSource();
-        MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource);
+        TrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource);
 
         player.prepare(audioRenderer);
         player.setPlayWhenReady(true);
@@ -66,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
     private SampleSource getEncryptedSampleSource(){
         Allocator allocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
         DataSource dataSource = new DefaultUriDataSource(this, getUserAgent());
-        Aes128DataSource aes128DataSource = new Aes128DataSource(dataSource, AES_KEY, AES_IV);
-        return new ExtractorSampleSource(ENCRYPTED_MUSIC_URI, aes128DataSource, allocator, BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE);
+        AesDataSource aesDataSource = new AesDataSource(dataSource, AES_KEY, AES_IV);
+        return new ExtractorSampleSource(ENCRYPTED_MUSIC_URI, aesDataSource, allocator, BUFFER_SEGMENT_COUNT * BUFFER_SEGMENT_SIZE);
     }
 
-    public String getUserAgent() {
+    private String getUserAgent() {
         String versionName;
         try {
             String packageName = getPackageName();
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 + ") " + "ExoPlayerLib/" + ExoPlayerLibraryInfo.VERSION;
     }
 
-    public static byte[] hexStringToByteArray(String s) {
+    private static byte[] hexStringToByteArray(String s) {
         s = s.toLowerCase();
         int len = s.length();
         byte[] data = new byte[len / 2];

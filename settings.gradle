@@ -1,1 +1,2 @@
 include ':app'
+//project(':library').projectDir = new File('../ExoPlayer/library')

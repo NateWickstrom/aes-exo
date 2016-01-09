@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.nate.aesexo"
@@ -28,4 +28,5 @@ dependencies {
     compile 'com.jakewharton.timber:timber:2.7.1'
 
     compile 'com.google.android.exoplayer:exoplayer:r1.5.3'
+    //compile project(':library')
 }
