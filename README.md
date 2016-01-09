@@ -14,7 +14,7 @@ openssl enc -aes-128-cbc -nosalt -p -in sample.aac -out sample.enc
 ToDo
 -------
 
-Only files with AAC containers work for for music playback.  M4A and MP4 containers will not work. 
+Only files with AAC containers work for music playback.  M4A and MP4 containers will not work. 
 
 License
 --------
