@@ -3,6 +3,19 @@ Encrypted playback with ExoPlayer
 
 Example App that plays an local aes encrytped aac file using Exo Player
 
+Encryption
+-------
+
+[Sample files][1] can encypted using the following OpenSSL command:
+```
+openssl enc -aes-128-cbc -nosalt -p -in sample.aac -out sample.enc
+```
+
+ToDo
+-------
+
+Only files with AAC containers work for for music playback.  M4A and MP4 containers will not work. 
+
 License
 --------
 
@@ -19,3 +32,5 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+    
+[1]: http://download.wavetlan.com/SVV/Media/HTTP/http-aac.htm
