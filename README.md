@@ -1,12 +1,12 @@
 Encrypted playback with ExoPlayer
 =======
 
-Example App that plays an local aes encrytped aac file using Exo Player
+Example App that plays a local aes encrytped aac file using Exo Player
 
 Encryption
 -------
 
-[Sample files][1] can encypted using the following OpenSSL command:
+[Sample files][1] can be encypted using the following OpenSSL command:
 ```
 openssl enc -aes-128-cbc -nosalt -p -in sample.aac -out sample.enc
 ```
