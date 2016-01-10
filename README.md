@@ -10,6 +10,15 @@ Encryption
 ```
 openssl enc -aes-128-cbc -nosalt -p -in sample.aac -out sample.enc
 ```
+Replace the `AES_KEY` and `AES_IV` values in `MainActivity` with the output from the above command.
+```java
+byte[] AES_KEY = hexStringToByteArray("<your_new_aes_key>");
+byte[] AES_IV = hexStringToByteArray("<your_aes_iv>");
+```
+If you change the ecryption method, remember to update the `Cipher` instance inside the `AesDataSource`:
+```java
+Cipher.getInstance("AES/CBC/NoPadding")
+```
 
 ToDo
 -------
