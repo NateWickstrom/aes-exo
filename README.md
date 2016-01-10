@@ -23,7 +23,7 @@ Cipher.getInstance("AES/CBC/NoPadding")
 ToDo
 -------
 
-Only files with AAC containers work for music playback.  M4A and MP4 containers will not work. 
+Only files with AAC containers work for music playback.  M4A and MP4 containers will not work due to some unresolved bugs. 
 
 License
 --------
